@@ -14,10 +14,12 @@ app.use(cors({
 }))
 import userRoutes from "./Routes/userRoutes";
 import { userChat } from "./Routes/chat.routes";
+import { userLastMessages } from "./Routes/last.message.routes";
 
 app.use('/uploads',express.static("uploads"));
 app.use('/api/v1',userRoutes);
 app.use('/api/v1',userChat);
+app.use('/api/v1',userLastMessages);
 app.use(errorMiddleware);
 
 export default app;

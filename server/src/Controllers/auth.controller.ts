@@ -336,8 +336,41 @@ export const getCurrentUserId=async(req:authRequest,res:Response,next:NextFuncti
          success:true,
          message:"successfull",
          data:{
-            currentuserId:userId,
+            currentUserId:userId,
          }
+      })
+   }catch(err){
+      next(err);
+   }
+}
+
+
+
+
+
+
+
+
+
+
+
+export const allreceiver=async(req:authRequest,res:Response,next:NextFunction)=>{
+   try{
+      const user=req.user;
+      const userId=user?._id;
+      if(!userId){
+         return res.status(401).json({
+            success:false,
+            message:"user not logged in",
+         });
+      }
+      const getAllUsers=await addUserModel.find({
+         _id:{$ne:userId},
+      }).select("-password -createdAt -role -updatedAt");
+      return res.status(200).json({
+         success:true,
+         message:"successfull",
+         data:getAllUsers,
       })
    }catch(err){
       next(err);
