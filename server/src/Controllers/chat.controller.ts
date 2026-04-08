@@ -78,3 +78,17 @@ return res.status(200).json({
     next(err);
 }
 } 
+
+
+
+
+
+
+
+
+
+
+
+export const showUserLastMessage=async(req:Request,res:Response,next:NextFunction)=>{
+
+}

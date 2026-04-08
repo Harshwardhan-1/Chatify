@@ -312,3 +312,34 @@ export const currentUser=async(req:authRequest,res:Response,next:NextFunction)=>
       next(err);
    }
 }
+
+
+
+
+
+
+
+
+
+
+export const getCurrentUserId=async(req:authRequest,res:Response,next:NextFunction)=>{
+   try{
+      const user=req.user;
+      const userId=user?._id;
+      if(!userId){
+         return res.status(401).json({
+            success:false,
+            message:"user Id not found",
+         });
+      }
+      return res.status(200).json({
+         success:true,
+         message:"successfull",
+         data:{
+            currentuserId:userId,
+         }
+      })
+   }catch(err){
+      next(err);
+   }
+}

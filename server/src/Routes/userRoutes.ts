@@ -1,6 +1,6 @@
 import {Router} from 'express';
 const userRoutes=Router();
-import { addUser,oldUsers,recieveOtp,resendOtp,me,userInfo,currentUser } from '../Controllers/auth.controller';
+import { addUser,oldUsers,recieveOtp,resendOtp,me,userInfo,currentUser,getCurrentUserId } from '../Controllers/auth.controller';
 import { isUserLoggedIn } from '../middleware/auth.middleware';
 
 userRoutes.post('/addUser',addUser);
@@ -10,5 +10,6 @@ userRoutes.get('/resend',isUserLoggedIn,resendOtp);
 userRoutes.get('/me',isUserLoggedIn,me);
 userRoutes.get('/userInfo',isUserLoggedIn,userInfo);
 userRoutes.get('/currentUser',isUserLoggedIn,currentUser);
+userRoutes.get('/getCurrentUserId',isUserLoggedIn,getCurrentUserId);
 
 export default userRoutes;      
