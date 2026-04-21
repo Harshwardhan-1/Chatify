@@ -43,6 +43,7 @@ export function ChatPage() {
         {messages.map((msgItem, index) => (
     <div key={index} className={`message ${msgItem.senderId === currentUserData?._id ? 'sender' : 'receiver'}`}>
       {msgItem.message}
+      {new Date(msgItem.createdAt).toLocaleTimeString([],{  hour:'2-digit',minute:'2-digit',hour12:true,})}
     </div>
 ))}
       </div>

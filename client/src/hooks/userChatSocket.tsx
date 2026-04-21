@@ -6,6 +6,7 @@ interface Message{
     senderId:string,
     receiverId:string,
     message:string,
+    createdAt:Date,
 }
 interface Data{
     message:string,
@@ -48,7 +49,7 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
     socket.connect();
     socket.emit('join',currentUserId);
     socket.on('receive-message',(data:Message)=>{
-    setMessages(prev => [...prev, { senderId: data.senderId, receiverId: data?.receiverId || data.senderId, message: data.message }]);
+    setMessages(prev => [...prev, { senderId: data.senderId, receiverId: data?.receiverId || data.senderId, message: data.message,createdAt:data.createdAt }]);
     });
     socket.on("chat-error",handleError);
     socket.on("user_status",handleStatus);
@@ -68,6 +69,8 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
         socket.disconnect();
     }
 },[currentUserId,data?.receiverId,data?.userId]);
+
+
 const allmessages=[...prevMessage,...messages];
     const sendMessage = (data: { senderId:string;receiverId:string;message:string})=>{
         if(!data.senderId || !data.receiverId){

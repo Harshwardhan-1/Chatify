@@ -6,6 +6,7 @@ interface userPrevMessage{
     senderId:string,
     receiverId:string,
     message:string,
+    createdAt:Date,
 }
 
 export const UserOldMessage=(currentUserId:string | undefined,receiverId:string | undefined)=>{
