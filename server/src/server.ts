@@ -10,3 +10,9 @@ server.listen(PORT, async() => {
   console.log(`Server running on http://localhost:${PORT}`);
   await connectDb();
 });
+
+
+/*
+show blue tick if user sees the message or grey if he not seen the message yet
+
+*/
