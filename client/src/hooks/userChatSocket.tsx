@@ -40,7 +40,7 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
             }
         };
         fetch();
-    },[currentUserId,data]);
+    },[currentUserId,data]);   
 
     useEffect(()=>{
         if(!currentUserId){
