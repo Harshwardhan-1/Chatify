@@ -113,3 +113,20 @@ body, html {
     background-color: rgba(0,0,0,0.2);
     border-radius: 3px;
 }
+
+
+.error-box {
+  background: #ff4d4f;
+  color: white;
+  padding: 8px;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+
+
+
+.user-status{
+    color: green;
+    background-color: black;
+}

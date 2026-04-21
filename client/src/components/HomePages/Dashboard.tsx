@@ -1,11 +1,12 @@
 import {UserUseEffect} from '../../hooks/usechatUseEffect';
 import '../../styles/Dashboard.css';
+import { Lastmessageconvo } from '../../hooks/uselastMessage';
   import { useNavigate } from "react-router-dom";
   export function Dashboard(){
     const navigate=useNavigate();
 
 
-    const {data,convo,id}=UserUseEffect();
+    const {data,id}=UserUseEffect();
     interface userInfo{
       userId:string,
       name:string,
@@ -16,6 +17,8 @@ import '../../styles/Dashboard.css';
     const handleClick=async(all:userInfo)=>{
       navigate('/ChatPage',{state:{harsh:all}});
     }
+    const conversation=Lastmessageconvo();
+    
       return (
         <>
       <div className="dashboard-container">
@@ -24,14 +27,14 @@ import '../../styles/Dashboard.css';
           <input type="text" placeholder="Search or start new chat" className="search-bar" />
           <div className="user-list">
             {data.map((user,index)=>{
-              const conversation=convo.find((c)=>
-                c.participants.includes(id?.currentUserId || "") && c.participants.includes(user.userId));
+              const lastConversion=conversation.find((c)=>
+              c.participants.includes(id?.currentUserId || "") && c.participants.includes(user.userId));
               return(
-                      <div key={index} className="user-item" onClick={() => handleClick(user)}>
+                   <div key={index} className="user-item" onClick={() => handleClick(user)}>
                 <div className="avatar">{user.userName[0]}</div>
                 <div className="user-info">
                   <div className="user-name">{user.userName}</div>
-                  <div className="last-message">{conversation?conversation.lastMessage:""}</div>
+                  <div className="last-message">{lastConversion?lastConversion.message:""}</div>
                 </div>
               </div>
                );
@@ -46,7 +49,6 @@ import '../../styles/Dashboard.css';
           </div>
         </div>
       </div>
-      <h1>currentUserId:{id?.currentUserId}</h1>
       </>
     );
   }

@@ -16,11 +16,16 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
         console.log('connected',socket.id);
         socket.on("join",(userId:string)=>{
           users[userId]=socket.id;
+          socket.emit("all_online_users",Object.keys(users));
+          socket.broadcast.emit("user_status",{
+            userId,
+            message:"online",
+          })
           console.log('Joined',userId);
         })
         socket.on('send_message',async(data)=>{
           try{
-          const savedMessage=await saveUserChats(data);
+          const savedMessage=await saveUserChats(data); 
           const receiverSocketId=users[data.receiverId];
           if(receiverSocketId){
             io.to(receiverSocketId).emit('receive-message',savedMessage); //es data ma senderId,receiverId,message
@@ -28,17 +33,22 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
           socket.emit('receive-message',savedMessage);
         }catch(error){
           const errMsg=error instanceof Error ? error.message :"Unknown Error";
-          socket.emit("error",{
+          socket.emit("chat-error",{
             message:"Message send failed",
             error:errMsg,
           });
         }
         });
+
         socket.on('disconnect',()=>{
           console.log('disconnect');
           for (const id in users) {
           if (users[id] === socket.id) {
             delete users[id];
+             socket.broadcast.emit("user_status", {
+             userId: id,
+             message: "offline",
+      });
             break;
           }
         }

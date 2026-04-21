@@ -12,19 +12,13 @@ interface userInfo{
       profilePic:string,
     }
 
-    
-  interface Conversion{
-    participants:string[], 
-    lastMessage:string,
-    createdAt:Date,
-  }
+ 
 
   interface userId{
     currentUserId:string,
   }
 export const UserUseEffect=()=>{
  const [data,setData]=useState<userInfo[]>([]);
- const [convo,setConvo]=useState<Conversion[]>([]);
    const [id,setId]=useState<userId>();
 
     useEffect(()=>{
@@ -47,28 +41,6 @@ export const UserUseEffect=()=>{
       fetch();
     },[]);
 
-
-    useEffect(()=>{
-      const fetch=async()=>{
-  try{
-  const response=await axios.get(`${env.backendurl}/api/v1/lastMessage`,{withCredentials:true});
-  if(response.data.message=== 'successfull'){
-    setConvo(response.data.data);
-  }
-  }catch(err){
-    const error=err as AxiosError;
-    if(error.response && error.response.data){
-      const data=error.response.data as {error:string;message:string};
-      alert(data.error || data.message || 'something went wrong');
-    }else{
-      alert(error.message);
-    }
-  }
-      };
-      fetch();
-    },[]);
-
-
     
      useEffect(()=>{
     const fetch=async()=>{
@@ -90,5 +62,5 @@ export const UserUseEffect=()=>{
     fetch();
   },[])
 
-  return {data,convo,id};
+  return {data,id};
 }

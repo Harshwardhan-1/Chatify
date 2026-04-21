@@ -1,6 +1,7 @@
 import { chatModel } from '../models/chat.model';
-import { conversionModel } from '../models/conversion.model';
 import {Request,Response,NextFunction} from 'express';
+import { lastMessageModel } from '../models/conversion.model';
+import { handleConversion } from './lastmessage.controller';
 
 //for text messages only not for file now i will build diffrent function for this that will handle file
 //using multer disk storage
@@ -14,20 +15,8 @@ try{
     const senderId=data.senderId;
     const receiverId=data.receiverId;
     const message=data.message;
-
-    const checkConversion=await conversionModel.findOne({
-        participants: { $all:[senderId,receiverId]}
-    })
-    if(checkConversion){
-        checkConversion.lastMessage=message;
-        await checkConversion.save();
-    }else{
-        const createCheckConversion=await conversionModel.create({
-            participants:[senderId,receiverId],
-            lastMessage:message,
-        });
-    }
-
+   
+    await handleConversion(senderId,receiverId,message);
     const createChat=await chatModel.create({
         senderId,
         receiverId,

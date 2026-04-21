@@ -1,33 +1,27 @@
 import mongoose from 'mongoose';
 import {Document,Types} from 'mongoose';
 
-export interface IConversion extends Document{
-    participants:Types.ObjectId[],
-    lastMessage:string,
+export interface IlastMessageInterface extends Document{
+    participants:mongoose.Types.ObjectId[],
+    message:string,
     createdAt:Date,
+    updatedAt:Date,
 }
 
 
-
-export const conversionSchema=new mongoose.Schema<IConversion>({
+export const lastMessageSchema=new mongoose.Schema<IlastMessageInterface>({
     participants:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"addUser",
         required:true,
     }],
-    lastMessage:{
-        type:String, 
-        required:true,
-    },
-    createdAt:{
-        type:Date,
-        default:Date.now(),
-    },
+    message:{
+        type:String,
+        required:[true,"message field is required"],
+    }
 },{
-    timestamps:true,
+    timestamps:true
 })
 
 
-
-
-export const conversionModel=mongoose.model<IConversion>('conversion',conversionSchema);
+export const lastMessageModel=mongoose.model<IlastMessageInterface>("lastMessage",lastMessageSchema);
