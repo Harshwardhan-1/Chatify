@@ -40,7 +40,7 @@ export default function Login(){
          <div className='signin-page-wrapper'>
         <div className="signin-page">
         <h1>Welcome Back</h1>
-        <p>Enter your Credentials to access your account</p>
+        <p>Sign In to continue chatting</p>
         <form onSubmit={handleSubmit}>
             <label>Email</label>
             <input type="text" placeholder="Enter your email here" value={email} onChange={(e)=>setEmail(e.target.value)}  />
