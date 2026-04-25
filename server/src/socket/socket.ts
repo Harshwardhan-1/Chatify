@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { Server as httpServer } from 'http';
 import { saveUserChats } from "../Controllers/chat.controller";
+import { userPresence } from "../Controllers/userPresence.controller";
 export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
     const io=new Server(server,{
         cors:{
@@ -38,12 +39,13 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
         }
         });
 
-        socket.on('disconnect',()=>{
+        socket.on('disconnect',async()=>{
           let disconnectUserId="";
           console.log('disconnect');
           for (const id in users) {
           if (users[id] === socket.id) {
             disconnectUserId=id;
+            await userPresence(id);
             delete users[id];
             break;
              }

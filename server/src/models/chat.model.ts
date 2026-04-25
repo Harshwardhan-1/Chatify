@@ -53,6 +53,7 @@ export const ChatSchema=new mongoose.Schema<IChatSchema>({
     fileUrl:{
         type:String,
     },
+    
 },{
     timestamps:true,
 })

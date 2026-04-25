@@ -29,15 +29,14 @@ export function ChatPage() {
         <img src="defaultImage.avif" alt="Profile" />
         <p>
         {data?.userName}{" "}
-        {isReceiverOnline ? "🟢 Online" : "⚫ Offline"}
+        {isReceiverOnline ? "🟢 Online" : "offline"}
       </p>
       </div>
 
             <div className="message receiver">jisko message bhejna ha uski id:{data?.userId}</div>
             <div className="message receiver">jisko message bhejna ha uski email:{data?.email}</div>
             <div className="message sender">ya ha currentUserId:jo message karenga uski id :{currentUserData?._id}</div>
-            <div className="message sender">jo message karenga uski id :{currentUserData?.email}
-            </div>
+            <div className="message sender">jo message karenga uski id :{currentUserData?.email} </div>
 
       <div className="chat-messages">
         {messages.map((msgItem, index) => (
@@ -50,6 +49,7 @@ export function ChatPage() {
       <form className="chat-input" onSubmit={handleSubmit}>
         <input value={msg} onChange={e => setMsg(e.target.value)} placeholder="Type Your Message" />
         <button type="submit">Send</button>
+        
       </form>
     </div>
   );
