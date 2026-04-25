@@ -10,6 +10,9 @@ import { ChatPage } from "./components/HomePages/ChatPage"
 function App() {
 useEffect(()=>{
   socket.connect();
+  return()=>{
+    socket.disconnect();
+  }
 })
 
   return (

@@ -11,13 +11,16 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
       });
       
       const users:{[key:string]:string}={};
-      
       io.on('connection',(socket)=>{
         console.log('connected',socket.id);
         socket.on("join",(userId:string)=>{
           users[userId]=socket.id;
+          io.emit("user_status",Object.keys(users));
           console.log('Joined',userId);
         })
+    socket.on("get_users", () => {
+    socket.emit("user_status", Object.keys(users));
+  });
         socket.on('send_message',async(data)=>{
           try{
           const savedMessage=await saveUserChats(data); 
@@ -36,12 +39,17 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
         });
 
         socket.on('disconnect',()=>{
+          let disconnectUserId="";
           console.log('disconnect');
           for (const id in users) {
           if (users[id] === socket.id) {
+            disconnectUserId=id;
             delete users[id];
             break;
              }
+          }
+          if(disconnectUserId){
+            io.emit("user_status",Object.keys(users));
           }
         })
       })
