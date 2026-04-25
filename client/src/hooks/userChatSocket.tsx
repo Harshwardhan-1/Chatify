@@ -13,10 +13,7 @@ interface Data{
     error:string,
 }
 
-interface Status{
-    userId:string,
-    message:string,
-}
+
 
 
 
@@ -25,7 +22,6 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
     const data=location?.state?.harsh;
     const [messages,setMessages]=useState<Message[]>([]);
     const [error,setError]=useState<Data | null>(null);
-    const [status,setStatus]=useState<Status | null>(null);
     const prevMessage=UserOldMessage(currentUserId,data?.userId);
     
 
@@ -36,37 +32,19 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
         },3000);
     }
 
-    const handleStatus=(statusData: Status)=>{
-  if (statusData.userId===data?.userId){
-    setStatus(statusData);
-  }
-};
+  
 
     useEffect(()=>{
         if(!currentUserId){
             return;
         }
-    socket.connect();
-    socket.emit('join',currentUserId);
     socket.on('receive-message',(data:Message)=>{
     setMessages(prev => [...prev, { senderId: data.senderId, receiverId: data?.receiverId || data.senderId, message: data.message,createdAt:data.createdAt }]);
     });
     socket.on("chat-error",handleError);
-    socket.on("user_status",handleStatus);
-
-    socket.on("all_online_users", (onlineUsers: string[]) => {
-  if (onlineUsers.includes(data?.userId)) {
-    setStatus({ userId: data.userId, message: "online" });
-  } else {
-    setStatus({ userId: data.userId, message: "offline" });
-  }
-});
     return()=>{
         socket.off('receive-message');
         socket.off('chat-error');
-        socket.off('all_online_users');
-        socket.off('user_status');
-        socket.disconnect();
     }
 },[currentUserId,data?.receiverId,data?.userId]);
 
@@ -78,5 +56,5 @@ const allmessages=[...prevMessage,...messages];
         }
     socket.emit("send_message", data);
   };
-  return { messages:allmessages, sendMessage,error,status };
+  return { messages:allmessages, sendMessage,error };
 };

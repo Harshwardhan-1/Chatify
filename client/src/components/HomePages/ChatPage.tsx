@@ -12,7 +12,7 @@ export function ChatPage() {
   const currentUserData=useCurrentUser();
 
 
-  const { messages, sendMessage,error,status} = useChatSocket(currentUserData?._id);
+  const { messages, sendMessage,error} = useChatSocket(currentUserData?._id);
   const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(!currentUserData?._id || !data?.userId ){
@@ -28,9 +28,6 @@ export function ChatPage() {
         {error && (<div className="error-box">{error.message}</div>)}
         <img src="defaultImage.avif" alt="Profile" />
         <h4>{data?.userName}</h4>
-        {status?.userId === data?.userId && (<div className="user_status">userStatus: {status?.message}
- </div>
-)}
       </div>
 
             <div className="message receiver">jisko message bhejna ha uski id:{data?.userId}</div>

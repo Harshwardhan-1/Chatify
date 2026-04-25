@@ -16,11 +16,6 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
         console.log('connected',socket.id);
         socket.on("join",(userId:string)=>{
           users[userId]=socket.id;
-          socket.emit("all_online_users",Object.keys(users));
-          socket.broadcast.emit("user_status",{
-            userId,
-            message:"online",
-          })
           console.log('Joined',userId);
         })
         socket.on('send_message',async(data)=>{
@@ -45,13 +40,9 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
           for (const id in users) {
           if (users[id] === socket.id) {
             delete users[id];
-             socket.broadcast.emit("user_status", {
-             userId: id,
-             message: "offline",
-      });
             break;
+             }
           }
-        }
         })
       })
 }

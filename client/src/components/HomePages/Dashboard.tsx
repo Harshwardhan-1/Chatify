@@ -1,7 +1,9 @@
 import {UserUseEffect} from '../../hooks/usechatUseEffect';
 import '../../styles/Dashboard.css';
 import { Lastmessageconvo } from '../../hooks/uselastMessage';
-  import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { socket } from '../../utils/socket';
+import { useEffect } from 'react';
   export function Dashboard(){
     const navigate=useNavigate();
 
@@ -14,6 +16,12 @@ import { Lastmessageconvo } from '../../hooks/uselastMessage';
       email:string,
       profilePic:string,
     }
+
+    useEffect(()=>{
+      const userId=id?.currentUserId;
+      if(!userId)return;
+        socket.emit("join",userId);
+    },[id?.currentUserId]);
     const handleClick=async(all:userInfo)=>{
       navigate('/ChatPage',{state:{harsh:all}});
     }
