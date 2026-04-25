@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import { Server as httpServer } from 'http';
 import { saveUserChats } from "../Controllers/chat.controller";
 import { userPresence } from "../Controllers/userPresence.controller";
+import { userPresenceModel } from "../models/userPresence.model";
 export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
     const io=new Server(server,{
         cors:{
@@ -22,6 +23,18 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
     socket.on("get_users", () => {
     socket.emit("user_status", Object.keys(users));
   });
+   socket.on("user_last_visit",async(userId)=>{
+      const findIt=await userPresenceModel.findOne({userId});
+      if(findIt){
+        socket.emit("user_last_visit_data",{
+          userId,
+          lastSeen:findIt.lastSeen,
+        })
+      }    
+    })
+
+
+
         socket.on('send_message',async(data)=>{
           try{
           const savedMessage=await saveUserChats(data); 
@@ -45,7 +58,11 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
           for (const id in users) {
           if (users[id] === socket.id) {
             disconnectUserId=id;
-            await userPresence(id);
+            const userlastvisit=await userPresence(id);
+            io.emit("user_last_visit_data",{
+              userId:id,
+              lastSeen:userlastvisit,
+            })
             delete users[id];
             break;
              }

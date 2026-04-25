@@ -12,7 +12,7 @@ export function ChatPage() {
   const currentUserData=useCurrentUser();
 
 
-  const { messages, sendMessage,error,isReceiverOnline} = useChatSocket(currentUserData?._id);
+  const { messages, sendMessage,error,isReceiverOnline,lastVisit} = useChatSocket(currentUserData?._id);
   const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(!currentUserData?._id || !data?.userId ){
@@ -29,7 +29,7 @@ export function ChatPage() {
         <img src="defaultImage.avif" alt="Profile" />
         <p>
         {data?.userName}{" "}
-        {isReceiverOnline ? "🟢 Online" : "offline"}
+        {isReceiverOnline ? "🟢 Online" : lastVisit?`Last seen at ${new Date(lastVisit.lastSeen).toLocaleString()}`:"offline"}
       </p>
       </div>
 
