@@ -83,6 +83,7 @@ export const oldUsers=async(req:Request,res:Response,next:NextFunction)=>{
       const oldUser=await addUserModel.findOne({email});
       if(!oldUser){
          return res.status(400).json({
+            success:false,
             message:"user not exist",
          });
       }

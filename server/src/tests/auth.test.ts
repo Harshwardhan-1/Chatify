@@ -10,6 +10,9 @@ jest.mock("jsonwebtoken");
 jest.mock("bcrypt");
 
 describe("POST /api/v1/addUser",()=>{
+    beforeEach(()=>{
+        jest.clearAllMocks();
+    })
     it("it should register user successfully with a status code of 201",async()=>{
         (addUserModel.findOne as jest.Mock).mockResolvedValue(null);
         (bcrypt.genSalt as jest.Mock).mockResolvedValue("***");
@@ -50,7 +53,7 @@ describe("POST /api/v1/addUser",()=>{
                 message:"invalid email format",
             })
      })
-     it.only("it should return user already exist with a status code of 409",async()=>{
+     it("it should return user already exist with a status code of 409",async()=>{
         (addUserModel.findOne as jest.Mock).mockReturnValue("test@gmail.com");
         const res=await request(app)
         .post("/api/v1/addUser")
@@ -66,4 +69,98 @@ describe("POST /api/v1/addUser",()=>{
             message:"user already exist",
         })
      })
+})
+
+
+
+
+
+
+
+
+
+describe.only("POST /api/v1/oldUser",()=>{
+    beforeEach(()=>{
+        jest.clearAllMocks();
+    })
+    it("it should return user find successfully with a status code of 200",async()=>{
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+        (addUserModel.findOne as jest.Mock).mockResolvedValue({
+            email:"test@gmail.com",
+            password:"123**",
+        });
+        (jwt.sign as jest.Mock).mockReturnValue("fake_token");
+        const res=await request(app)
+        .post("/api/v1/oldUser")
+        .send({
+            email:"test@gmail.com",
+            password:"123**",
+        })
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            success:true,
+            message:"successfully found user",
+        })
+    });
+    it("it should return parsed error with a status code of 400",async()=>{
+        const res=await request(app)
+        .post("/api/v1/oldUser")
+        .send({
+            email:"test@gmail.com",
+            password:"",
+        });
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            success:false,
+            message:"password is required",
+        })
+    });
+    it("it should return user not found with a status code of 400",async()=>{
+        (addUserModel.findOne as jest.Mock).mockResolvedValue(null);
+        const res=await request(app)
+        .post("/api/v1/oldUser")
+        .send({
+            email:"test@gmail.com",
+            password:"1234",
+        });
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            success:false,
+            message:"user not exist",
+        });
+    })
+    it("it should return password is required with a status code of 400",async()=>{
+        (addUserModel.findOne as jest.Mock).mockResolvedValue({
+            email:"test@gmail.com",
+        })
+        const res=await request(app)
+        .post("/api/v1/oldUser")
+        .send({
+            email:"test@gmail.com",
+            password:"123",
+        });
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            success:false,
+            message:"password is required",
+        })
+    });
+    it.only("it should return password dont match with a status code of 400",async()=>{
+        (addUserModel.findOne as jest.Mock).mockResolvedValue({
+            email:"test@gmail.com",
+            password:"123",
+        });
+        (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+        const res=await request(app)
+        .post("/api/v1/oldUser")
+        .send({
+            email:"test@gmail.com",
+            password:"123",
+        });
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            success:false,
+            message:"password doesn't match",
+        });
+    })
 })
