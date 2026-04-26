@@ -377,3 +377,29 @@ export const allreceiver=async(req:authRequest,res:Response,next:NextFunction)=>
       next(err);
    }
 }
+
+
+
+
+
+
+
+
+export const Logout=async(req:authRequest,res:Response,next:NextFunction)=>{
+try{
+   const token=req.cookies?.token;
+   if(!token){
+      return res.status(401).json({
+         success:false,
+         message:"cookie not found",
+      })
+   }
+   res.clearCookie("token");
+   return res.status(200).json({
+      success:true,
+      message:"logout successfully",
+   })
+}catch(err){
+   next(err);
+}
+}

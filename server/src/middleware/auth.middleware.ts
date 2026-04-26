@@ -9,6 +9,7 @@ export const isUserLoggedIn=async(req:authRequest,res:Response,next:NextFunction
     const token=req.cookies?.token;
     if(!token){
         return res.status(401).json({
+            success:false,
             message:"token not found",
         });
     }

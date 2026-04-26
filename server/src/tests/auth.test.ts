@@ -3,11 +3,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import app from '../app';
 import { addUserModel } from '../models/userModel';
-import { userPresenceModel } from '../models/userPresence.model';
+import { addUser } from '../Controllers/auth.controller';
 
 jest.mock("../models/userModel");
 jest.mock("jsonwebtoken");
 jest.mock("bcrypt");
+
 
 describe("POST /api/v1/addUser",()=>{
     beforeEach(()=>{
@@ -161,6 +162,61 @@ describe.only("POST /api/v1/oldUser",()=>{
         expect(res.body).toEqual({
             success:false,
             message:"password doesn't match",
+        });
+    })
+})
+
+
+
+
+
+
+
+
+
+
+
+describe.only("POST /api/v1/logout",()=>{
+    it("it should logout user and return status code of 200",async()=>{
+       (jwt.verify as jest.Mock).mockReturnValue({email:"test@gmail.com"});
+       (addUserModel.findOne as jest.Mock).mockResolvedValue({
+        _id:"123",
+        email:"test@gmail.com",
+        role:"user",   
+    });
+    const res=await request(app)
+    .get("/api/v1/logout")
+    .set("Cookie",["token=fake_token"]);
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("logout successfully");
+    expect(res.body.success).toBe(true);
+    const cookies=res.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+    expect(cookies[0]).toContain("token=");
+    });
+    it("it should return token not found with a status code of 401",async()=>{
+        (jwt.verify as jest.Mock).mockResolvedValue({_id:"123",email:"test@gmail.com",role:"user"});
+        (addUserModel.find as jest.Mock).mockResolvedValue({
+          email:"test@gmail.com",  
+        });
+        const res=await request(app)
+        .get("/api/v1/logout")
+        expect(res.status).toBe(401);
+        expect(res.body).toEqual({
+            success:false,
+            message:"token not found",
+        })
+    })
+    it("it should return user not found with a status code of 401",async()=>{
+        (jwt.verify as jest.Mock).mockResolvedValue({email:"test@gmail.com"});
+        (addUserModel.findOne as jest.Mock).mockResolvedValue(null);
+        const res=await request(app)
+        .get("/api/v1/logout")
+        .set("Cookie",["token=fake_token"]);
+        expect(res.status).toBe(401);
+        expect(res.body).toEqual({
+            success:false,
+            message:"User not found",
         });
     })
 })
