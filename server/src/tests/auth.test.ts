@@ -176,7 +176,10 @@ describe.only("POST /api/v1/oldUser",()=>{
 
 
 
-describe.only("POST /api/v1/logout",()=>{
+describe("POST /api/v1/logout",()=>{
+    beforeEach(()=>{
+        jest.clearAllMocks();
+    })
     it("it should logout user and return status code of 200",async()=>{
        (jwt.verify as jest.Mock).mockReturnValue({email:"test@gmail.com"});
        (addUserModel.findOne as jest.Mock).mockResolvedValue({
