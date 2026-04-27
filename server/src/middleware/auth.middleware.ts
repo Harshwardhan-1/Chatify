@@ -14,7 +14,7 @@ export const isUserLoggedIn=async(req:authRequest,res:Response,next:NextFunction
         });
     }
     const decodedData=jwt.verify(token,JWT_SECRET as string) as userPlayLoad;
-    const user=await addUserModel.findOne({email:decodedData.email});
+    const user=await addUserModel.findOne({email:decodedData.email}).select("-password");
     if(!user){
         return res.status(401).json({
             success:false,
