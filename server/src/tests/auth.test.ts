@@ -80,7 +80,7 @@ describe("POST /api/v1/addUser",()=>{
 
 
 
-describe.only("POST /api/v1/oldUser",()=>{
+describe("POST /api/v1/oldUser",()=>{
     beforeEach(()=>{
         jest.clearAllMocks();
     })
@@ -176,7 +176,7 @@ describe.only("POST /api/v1/oldUser",()=>{
 
 
 
-describe("POST /api/v1/logout",()=>{
+describe("GET /api/v1/logout",()=>{
     beforeEach(()=>{
         jest.clearAllMocks();
     })
@@ -221,5 +221,36 @@ describe("POST /api/v1/logout",()=>{
             success:false,
             message:"User not found",
         });
+    })
+})
+
+
+
+
+describe.only("GET /api/v1/me",()=>{
+    beforeEach(()=>{
+        jest.clearAllMocks();
+    })
+    it("it should give user info with a status code of 200",async()=>{
+        (jwt.verify as jest.Mock).mockResolvedValue({_id:"123",email:"test@gmail.com",role:"user",});
+        (addUserModel.findOne as jest.Mock).mockResolvedValue({email:"test@gmail.com"});
+        const res=await request(app)
+        .get("/api/v1/me")
+        .set("Cookie",["token=fake_token"]);
+        expect(res.status).toBe(200);
+        expect(res.body.message).toBe("have cookie");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toMatchObject({
+            email:"test@gmail.com",
+        })
+    })
+    it("it should return cookie not found with a status code of 401",async()=>{
+        const res=await request(app)
+        .get("/api/v1/me")
+        expect(res.status).toBe(401);
+        expect(res.body).toEqual({
+            success:false,
+            message:"token not found",
+        })
     })
 })
