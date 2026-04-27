@@ -34,17 +34,19 @@ export const isAdminLoggedIn=async(req:authRequest,res:Response,next:NextFunctio
     try{
         const token=req.cookies?.token;
         if(!token){
-            return res.status(403).json({
+            return res.status(401).json({
+                success:false,
                 message:"token not found",
             });
         }
         const decodedData=jwt.verify(token,JWT_SECRET as string) as userPlayLoad;
         if(decodedData.role!='admin'){
             return res.status(403).json({
+                success:false,
                 message:"access denied",
             })
         }
-        const user=await addUserModel.findOne({email:decodedData.email});
+        const user=await addUserModel.findOne({email:decodedData.email}).select("-password");
         if(!user){
             return res.status(401).json({
                 success:false,
