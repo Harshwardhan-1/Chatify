@@ -58,9 +58,9 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
     });
     socket.on("chat-error",handleError);
     socket.on("user_status",handleStatus);
-     socket.on("user_last_visit_data",handlelastvisit);
     socket.emit('get_users');
     socket.emit('user_last_visit',data?.userId);
+    socket.on("user_last_visit_data",handlelastvisit);
     return()=>{
         socket.off('receive-message');
         socket.off('chat-error');
