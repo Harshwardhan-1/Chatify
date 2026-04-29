@@ -9,19 +9,20 @@ interface SocketData{
     senderId:string,
     receiverId:string,
     message:string,
+    messageType?:"text" | "image" | "video" | "url",
 }
 export const saveUserChats=async(data:SocketData)=>{
 try{
     const senderId=data.senderId;
     const receiverId=data.receiverId;
     const message=data.message;
-   
+    const messageType=data.messageType || "text";
     await handleConversion(senderId,receiverId,message);
     const createChat=await chatModel.create({
         senderId,
         receiverId,
         message,
-        messageType:"text",
+        messageType,
         isSeen:false,
         isDelieverd:false,
         isPopUp:false,

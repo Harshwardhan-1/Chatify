@@ -7,12 +7,15 @@ import { useCurrentUser } from "../../hooks/useCurrentUser";
 
 export function ChatPage() {
   const [msg, setMsg] = useState('');
+  // const [file,setFile]=useState<File |null>(null);
   const location = useLocation();
   const data = location?.state?.harsh;
   const currentUserData=useCurrentUser();
 
 
   const { messages, sendMessage,error,isReceiverOnline,lastVisit} = useChatSocket(currentUserData?._id);
+
+
   const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(!currentUserData?._id || !data?.userId ){
@@ -48,8 +51,8 @@ export function ChatPage() {
       </div>
       <form className="chat-input" onSubmit={handleSubmit}>
         <input value={msg} onChange={e => setMsg(e.target.value)} placeholder="Type Your Message" />
+        {/* <input type="file"  onChange={(e)=>{ if(e.target.files && e.target.files[0]){setFile(e.target.files[0]);}}} /> */}
         <button type="submit">Send</button>
-        
       </form>
     </div>
   );
