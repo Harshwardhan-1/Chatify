@@ -20,7 +20,10 @@ import { useEffect } from 'react';
     useEffect(()=>{
       const userId=id?.currentUserId;
       if(!userId)return;
+      if(!socket.hasJoined){
         socket.emit("join",userId);
+        socket.hasJoined=true;
+      }
     },[id?.currentUserId]);
     const handleClick=async(all:userInfo)=>{
       navigate('/ChatPage',{state:{harsh:all}});
