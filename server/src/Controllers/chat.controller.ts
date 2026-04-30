@@ -2,6 +2,7 @@ import { chatModel } from '../models/chat.model';
 import {Request,Response,NextFunction} from 'express';
 import { lastMessageModel } from '../models/conversion.model';
 import { handleConversion } from './lastmessage.controller';
+import { authRequest } from '../types/authRequest.type';
 
 //for text messages only not for file now i will build diffrent function for this that will handle file
 //using multer disk storage
@@ -68,3 +69,37 @@ return res.status(200).json({
     next(err);
 }
 } 
+
+
+
+
+
+
+export const userFile=async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const file=req.file;
+        if(!file){
+            return res.status(400).json({
+                success:false,
+                message:"no file",
+            });
+        }
+        const fileUrl=`http://localhost:5000/uploads${file.filename}`; 
+        let messageType="file";
+        if(file.mimetype.startsWith("image")){
+            messageType="image";
+        }else if(file.mimetype.startsWith("video")){
+            messageType="video";
+        }
+        return res.status(200).json({
+            success:true,   
+            message:"successfull",
+            data:{
+            url:fileUrl,
+            msgType:messageType,
+            }
+        })
+    }catch(err){
+        next(err);
+    }
+}
