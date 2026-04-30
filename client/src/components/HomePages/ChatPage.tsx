@@ -3,11 +3,12 @@ import { useLocation } from "react-router-dom";
 import { useChatSocket } from "../../hooks/userChatSocket";
 import '../../styles/ChatPage.css';
 import { useCurrentUser } from "../../hooks/useCurrentUser";
-
+import axios from "axios";
+import { env } from "../../configs/env.config";
 
 export function ChatPage() {
   const [msg, setMsg] = useState('');
-  // const [file,setFile]=useState<File |null>(null);
+  const [file,setFile]=useState<File |null>(null);
   const location = useLocation();
   const data = location?.state?.harsh;
   const currentUserData=useCurrentUser();
@@ -16,14 +17,22 @@ export function ChatPage() {
   const { messages, sendMessage,error,isReceiverOnline,lastVisit} = useChatSocket(currentUserData?._id);
 
 
-  const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
+  const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(!currentUserData?._id || !data?.userId ){
         return;
     }
     if (!msg.trim()) return alert("Input field is empty");
+    if(msg.trim()){
     sendMessage({ senderId: currentUserData?._id, receiverId: data?.userId, message: msg });
     setMsg('');
+    }
+    if(file){
+      const formData=new FormData();
+      formData.append("file",file);
+      const res=await axios.post(`${env.backendurl}/api/v1/file`,formData);
+      
+    }
   };
   return (
     <div className="chat-container">
@@ -51,7 +60,7 @@ export function ChatPage() {
       </div>
       <form className="chat-input" onSubmit={handleSubmit}>
         <input value={msg} onChange={e => setMsg(e.target.value)} placeholder="Type Your Message" />
-        {/* <input type="file"  onChange={(e)=>{ if(e.target.files && e.target.files[0]){setFile(e.target.files[0]);}}} /> */}
+        <input type="file"  onChange={(e)=>{ if(e.target.files && e.target.files[0]){setFile(e.target.files[0]);}}} />
         <button type="submit">Send</button>
       </form>
     </div>
