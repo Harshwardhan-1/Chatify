@@ -13,5 +13,5 @@ server.listen(PORT, async() => {
 
 
 /*
-show blue tick if user sees the message or grey if he not seen the message yet
+show real time that user is typing message
 */
