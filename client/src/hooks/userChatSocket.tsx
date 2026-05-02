@@ -20,7 +20,10 @@ interface lastSeen{
 }
 
 
-
+interface typing{
+    message:string,
+    senderId:string,
+}
 
 
 
@@ -31,6 +34,7 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
     const [error,setError]=useState<Data | null>(null);
     const [onlineUsers,setOnlineUsers]=useState<string[]>([]);
     const [lastVisit,setLastVisit]=useState<lastSeen |null>(null);
+    const [typing,setTyping]=useState<typing | null>(null);
     const prevMessage=UserOldMessage(currentUserId,data?.userId);
     
 
@@ -47,7 +51,16 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
     const handlelastvisit=(lastvisit:lastSeen)=>{
         setLastVisit(lastvisit);
     }
-  
+
+
+    const handleTyping=(data:typing)=>{
+        setTyping(data);
+    }
+    
+    const handleStoppedTyping=()=>{
+        setTyping(null);
+    }
+
 
     useEffect(()=>{
         if(!currentUserId){
@@ -61,11 +74,16 @@ export const useChatSocket=(currentUserId:string | undefined)=>{
     socket.emit('get_users');
     socket.emit('user_last_visit',data?.userId);
     socket.on("user_last_visit_data",handlelastvisit);
+    socket.on("user_typing_something",handleTyping);
+    socket.on("user_stopped_typing",handleStoppedTyping);
+    
     return()=>{
         socket.off('receive-message');
         socket.off('chat-error');
         socket.off('user_status');
         socket.off('user_last_visit_data');
+        socket.off('user_typing_something');
+        socket.off('user_stopped_typing');
     }
 },[currentUserId,data?.receiverId,data?.userId]);
 const allmessages=[...prevMessage,...messages];
@@ -77,5 +95,5 @@ const isReceiverOnline=onlineUsers.includes(data?.userId);
         }
     socket.emit("send_message", data);
   };
-  return { messages:allmessages, sendMessage,error,isReceiverOnline,lastVisit };
+  return { messages:allmessages, sendMessage,error,isReceiverOnline,lastVisit,typing };
 };

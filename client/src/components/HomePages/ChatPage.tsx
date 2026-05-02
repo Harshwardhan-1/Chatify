@@ -3,18 +3,19 @@ import { useLocation } from "react-router-dom";
 import { useChatSocket } from "../../hooks/userChatSocket";
 import '../../styles/ChatPage.css';
 import { useCurrentUser } from "../../hooks/useCurrentUser";
-import axios from "axios";
-import { env } from "../../configs/env.config";
+import { socket } from "../../utils/socket";
+import { useRef } from "react";
+
 
 export function ChatPage() {
   const [msg, setMsg] = useState('');
-  const [file,setFile]=useState<File |null>(null);
   const location = useLocation();
+  const timer=useRef<ReturnType<typeof setTimeout> | null>(null);
   const data = location?.state?.harsh;
   const currentUserData=useCurrentUser();
 
 
-  const { messages, sendMessage,error,isReceiverOnline,lastVisit} = useChatSocket(currentUserData?._id);
+  const { messages, sendMessage,error,isReceiverOnline,lastVisit,typing} = useChatSocket(currentUserData?._id);
 
 
   const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
@@ -26,14 +27,12 @@ export function ChatPage() {
     if(msg.trim()){
     sendMessage({ senderId: currentUserData?._id, receiverId: data?.userId, message: msg });
     setMsg('');
-    }
-    if(file){
-      const formData=new FormData();
-      formData.append("file",file);
-      const res=await axios.post(`${env.backendurl}/api/v1/file`,formData);
-      
+    socket.emit("stop_typing",{senderId:currentUserData?._id,receiverId:data?.userId}); 
     }
   };
+
+
+  
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -57,10 +56,27 @@ export function ChatPage() {
       {new Date(msgItem.createdAt).toLocaleTimeString([],{  hour:'2-digit',minute:'2-digit',hour12:true,})}
     </div>
 ))}
+
       </div>
+
+
+{typing && typing.senderId !== currentUserData?._id && (
+  <p className="typing-indicator">typing...</p>
+)}
+
       <form className="chat-input" onSubmit={handleSubmit}>
-        <input value={msg} onChange={e => setMsg(e.target.value)} placeholder="Type Your Message" />
-        <input type="file"  onChange={(e)=>{ if(e.target.files && e.target.files[0]){setFile(e.target.files[0]);}}} />
+          <input value={msg} placeholder="Type Your Message"
+          onChange={(e)=>{setMsg(e.target.value);
+          socket.emit("user_typing",{senderId:currentUserData?._id,receiverId:data?.userId});
+          if(timer.current!==null){
+            clearTimeout(timer.current);
+          }
+          timer.current=setTimeout(()=>{
+            socket.emit("stop_typing",{senderId:currentUserData?._id,receiverId:data?.userId
+            });
+          },2000);
+        }} 
+          onBlur={()=>{socket.emit("stop_typing",{senderId:currentUserData?._id,receiverId:data?.userId})}}/>
         <button type="submit">Send</button>
       </form>
     </div>

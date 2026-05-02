@@ -33,7 +33,22 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
       }    
     })
 
-
+    socket.on("user_typing",({senderId,receiverId})=>{
+      const receiverSocketId=users[receiverId];
+      if(receiverSocketId){
+        io.to(receiverSocketId).emit("user_typing_something",{
+          message:"typing",
+          senderId,
+        })
+      }
+    })
+    
+    socket.on("stop_typing",({senderId,receiverId})=>{
+      const receiverSocketId=users[receiverId];
+      if(receiverSocketId){
+        io.to(receiverSocketId).emit("user_stopped_typing",{senderId});
+      }
+    })
 
         socket.on('send_message',async(data)=>{
           try{
