@@ -39,6 +39,7 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
         io.to(receiverSocketId).emit("user_typing_something",{
           message:"typing",
           senderId,
+          receiverId,
         })
       }
     })
@@ -46,7 +47,7 @@ export const usersChat=(server:httpServer,FRONTEND_URL?:string)=>{
     socket.on("stop_typing",({senderId,receiverId})=>{
       const receiverSocketId=users[receiverId];
       if(receiverSocketId){
-        io.to(receiverSocketId).emit("user_stopped_typing",{senderId});
+        io.to(receiverSocketId).emit("user_stopped_typing",{senderId,receiverId});
       }
     })
 

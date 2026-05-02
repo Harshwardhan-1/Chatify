@@ -4,9 +4,15 @@ import { Lastmessageconvo } from '../../hooks/uselastMessage';
 import { useNavigate } from "react-router-dom";
 import { socket } from '../../utils/socket';
 import { useEffect } from 'react';
+import { useState } from 'react';
+
+interface typing{
+  message:string,
+  senderId:string,
+}
   export function Dashboard(){
     const navigate=useNavigate();
-
+    const [typing,setTyping]=useState<typing |null>(null);
 
     const {data,id}=UserUseEffect();
     interface userInfo{
@@ -17,12 +23,27 @@ import { useEffect } from 'react';
       profilePic:string,
     }
 
+
     useEffect(()=>{
       const userId=id?.currentUserId;
       if(!userId)return;
       if(!socket.hasJoined){
         socket.emit("join",userId);
         socket.hasJoined=true;
+      }
+      socket.on("user_typing_something",(data)=>{
+        if(data.receiverId===userId){
+          setTyping(data);
+        }
+      })
+      socket.on("user_stopped_typing",(data)=>{
+        if(data.receiverId===userId){
+          setTyping(null);
+        }
+      })
+      return()=>{
+        socket.off("user_typing_something");
+        socket.off("user_stopped_typing");
       }
     },[id?.currentUserId]);
     const handleClick=async(all:userInfo)=>{
@@ -45,7 +66,7 @@ import { useEffect } from 'react';
                 <div className="avatar">{user.userName[0]}</div>
                 <div className="user-info">
                   <div className="user-name">{user.userName}</div>
-                  <div className="last-message">{lastConversion?lastConversion.message:""}</div>
+                  <div className="last-message">{typing?.senderId===user.userId?"typing":lastConversion?lastConversion.message:""}</div>
                 </div>
               </div>
                );
