@@ -13,5 +13,5 @@ server.listen(PORT, async() => {
 
 
 /*
-show real time that user is typing message
+next task is to show typing message on dashboard also
 */
