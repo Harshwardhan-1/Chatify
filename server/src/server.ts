@@ -13,5 +13,5 @@ server.listen(PORT, async() => {
 
 
 /*
-next task is to show file video to usre chat
+next task is to show image file video to user chat
 */ 
